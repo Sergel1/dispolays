@@ -169,40 +169,6 @@ The following values are provisional until physical components arrive:
 - C4 height
 - Battery-pocket dimensions
 
----
-
-## Repository / submission contents
-
-Recommended structure:
-
-```text
-week-4-submission/
-├── README.md
-├── hardware/
-│   ├── kicad-project/
-│   ├── gerbers/
-│   ├── drill-files/
-│   ├── pcb-step/
-│   └── schematic-pdf/
-├── cad/
-│   ├── Dispolays_Enclosure_Master.SLDPRT
-│   ├── Dispolays_Enclosure_Master_front-shell.SLDPRT
-│   ├── Dispolays_Enclosure_Assembly.SLDASM
-│   ├── STEP/
-│   ├── STL/
-│   └── renders/
-├── images/
-│   ├── Dispolays_schematics.png
-│   ├── Pcb_Editor.png
-│   ├── PCB-3d-front.png
-│   ├── PCB-3d-back.png
-│   └── Enclosure_3D.png
-└── bom.csv
-```
-
-The present folder already contains KiCad project files, Gerbers, plated and non-plated drill files, PCB/SolidWorks files, and design screenshots. Files should be moved into the structure above before final submission if the submission system accepts folders or a ZIP archive.
-
----
 
 ## Files included
 
