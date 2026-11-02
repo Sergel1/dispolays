@@ -1,30 +1,45 @@
 # Dispolays - Week 4 Hardware Build
 
-## Project overview
+Dispolays is a compact, battery-powered e-paper device built around an ESP32-C3 SuperMini. During Week 4, I designed the custom carrier PCB in KiCad and started a parametric enclosure in SolidWorks.
 
-Dispolays is a compact battery-powered e-paper device built around an ESP32-C3 SuperMini. Week 4 focused on the custom electronics carrier PCB and the first parametric enclosure revision.
+This is still a **digital prototype**. I did not have the physical components during Week 4, so the PCB footprints, enclosure clearances, charging circuit, and final assembly still need to be checked with the real parts before manufacturing or connecting a LiPo battery.
+
+![Current enclosure and PCB assembly](images/Enclosure_3D.png)
+
+## What I completed this week
+
+- Designed the complete schematic in KiCad
+- Created a custom ESP32-C3 SuperMini symbol and provisional footprint
+- Added an MCP73831 LiPo charging circuit
+- Added an SS14 battery power path
+- Added battery-voltage sensing
+- Routed a two-layer PCB with power and signal net classes
+- Added GND pours on both copper layers
+- Added test points and an antenna keepout
+- Exported Gerbers, drill files, and a PCB STEP model
+- Imported the PCB into SolidWorks
+- Started a parametric PETG enclosure
+- Added the display opening, PCB bosses, separator, J2 clearance, side-button slots, and USB-C access
+
+## System overview
 
 The current design includes:
 
-- ESP32-C3 SuperMini on removable 1x8 socket strips
+- ESP32-C3 SuperMini mounted on removable 1x8 socket strips
 - 1.54-inch, 200x200 black-and-white e-paper display interface
 - MCP73831 single-cell LiPo charger
 - SS14 Schottky battery power path
-- Battery-voltage sensing circuit
+- Battery-voltage measurement circuit
 - Two side buttons
 - Four electrical test points
 - Two-layer custom PCB
-- Parametric PETG enclosure model in SolidWorks
+- Parametric PETG enclosure model
 
-> **Project status:** Digital design/prototype stage. No physical components have been received or tested yet. The PCB, component footprints, enclosure fit, charging circuit, and firmware still require physical verification before manufacturing or battery connection.
+## Schematic
 
----
+![KiCad schematic](images/Dispolays_schematics.png)
 
-## Week 4 results
-
-### PCB and schematic
-
-The KiCad design contains:
+### Main components
 
 - `U1` - ESP32-C3 SuperMini
 - `U2` - MCP73831T-2ACI/OT, SOT-23-5, 4.2 V LiPo charger
@@ -32,7 +47,7 @@ The KiCad design contains:
 - `J1` - 2-pin JST-PH battery connector
 - `J2` - 1x8, 2.54 mm e-paper connection header
 - `SW1`, `SW2` - side-actuated buttons
-- `R1`, `R2` - 1 MOhm battery divider
+- `R1`, `R2` - 1 MOhm battery-voltage divider
 - `R3`, `R4` - 100 kOhm external button pull-ups
 - `R5` - 5.1 kOhm charger-programming resistor
 - `C1`, `C2` - 4.7 uF charger capacitors
@@ -43,11 +58,9 @@ The KiCad design contains:
 - `TP3` - BAT+
 - `TP4` - 5V
 
-The PCB is approximately `38 x 30 x 1.6 mm`, uses two copper layers, and includes three M2 mechanical mounting holes.
-
 ### GPIO assignment
 
-| Function | ESP32-C3 GPIO |
+| Function | ESP32-C3 pin |
 |---|---:|
 | VBAT_SENSE | GPIO1 |
 | BTN_A | GPIO3 |
@@ -81,18 +94,18 @@ GPIO9
 | 7 | RST / EPD_RST |
 | 8 | BUSY / EPD_BUSY |
 
-### Power design
+## Power design
 
-The MCP73831 charging current is set by `R5 = 5.1 kOhm`, targeting approximately `196 mA`.
+The MCP73831 charge current is set by `R5 = 5.1 kOhm`, giving a target charge current of approximately `196 mA`.
 
-The battery path is:
+The battery power path is:
 
 ```text
 BAT+ -> SS14 anode
 SS14 cathode -> 5V rail
 ```
 
-Battery measurement is taken before the diode:
+Battery voltage is measured before the diode:
 
 ```text
 BAT+ -> R1 1 MOhm -> VBAT_SENSE -> R2 1 MOhm -> GND
@@ -102,22 +115,32 @@ BAT+ -> R1 1 MOhm -> VBAT_SENSE -> R2 1 MOhm -> GND
                              GND
 ```
 
-### PCB routing
+## PCB design
+
+![PCB Editor routing view](images/Pcb_Editor.png)
+
+The PCB is approximately `38 x 30 x 1.6 mm`, uses two copper layers, and has three mechanical mounting holes.
+
+### Routing choices
 
 - Signal traces: approximately `0.25 mm`
 - Power traces: approximately `0.50 mm`
 - GND zones on both `F.Cu` and `B.Cu`
-- GND stitching vias between layers
-- Antenna rule area blocks copper zones, tracks, and vias
+- GND stitching vias between both layers
+- Antenna rule area blocking copper zones, tracks, and vias
 - Current minimum measured antenna clearance: approximately `7.5 mm`
 
-The design target is at least `8 mm`; the enclosure keeps the battery, display cable, screws, and other conductive objects away from the antenna region.
+The design target is at least `8 mm`. Because the PCB is now frozen, the enclosure must keep the battery, display cable, screws, and other conductive objects farther away from the antenna region.
 
----
+### PCB renders
+
+| Front | Back |
+|---|---|
+| ![PCB front](images/PCB-3d-front.png) | ![PCB back](images/PCB-3d-back.png) |
 
 ## Enclosure design
 
-The enclosure is being developed parametrically in SolidWorks and is intended for PETG printing.
+The enclosure is being designed parametrically in SolidWorks and is intended to be printed in PETG.
 
 ### Current Version 1 envelope
 
@@ -127,22 +150,23 @@ Height: 88.0 mm
 Depth:  21.5 mm
 ```
 
-### Current construction
+### Current enclosure features
 
 - 2.0 mm side walls
 - 1.6 mm front wall
-- 2.0 mm rear panel target
+- 2.0 mm rear-panel target
 - 29 x 29 mm display window
 - Upper display and battery zone
 - Lower PCB and electronics zone
 - Internal separator rib
-- Display cable slot and enlarged J2 connector clearance
-- Three PCB mounting bosses matching the frozen PCB holes
-- Right-side switch slots
-- Oversized Version 1 USB-C opening and external cable-housing recess
-- Separate back shell planned with a provisional battery pocket
-
-### Selected display target
+- Display-cable slot
+- Enlarged J2 connector clearance
+- Three PCB mounting bosses aligned to the frozen PCB
+- Right-side button slots
+- Oversized Version 1 USB-C opening
+- External USB cable-housing recess
+- Back shell started but not yet finished
+- Provisional battery pocket still to be completed
 
 The enclosure is being designed around a Waveshare-style 1.54-inch black-and-white e-paper module:
 
@@ -153,143 +177,113 @@ Active area:          approximately 27.6 x 27.6 mm
 Interface:            SPI
 ```
 
-The display orientation is rotated inside the portrait enclosure so the 33 mm dimension runs across the enclosure width.
+The display is rotated inside the portrait enclosure so its 33 mm dimension runs across the enclosure width.
 
-### Important enclosure assumptions
-
-The following values are provisional until physical components arrive:
+### Dimensions still waiting for physical parts
 
 - ESP32-C3 SuperMini outline and pin-row spacing
-- Socket and assembled SuperMini stack height
+- Socket height and assembled SuperMini stack height
 - USB-C connector centre height
 - Display thickness and active-area offset
-- Display cable and connector shape
+- Display cable and connector size
 - Side-switch actuator dimensions
-- LiPo dimensions and connector polarity
+- LiPo size and connector polarity
 - C4 height
-- Battery-pocket dimensions
+- Final battery-pocket dimensions
 
-
-## Files included
-
-### KiCad source
-
-Include the complete KiCad project, not only Gerbers:
+## Repository structure
 
 ```text
-*.kicad_pro
-*.kicad_sch
-*.kicad_pcb
-project symbol and footprint libraries
+cad/
+├── Dispolays_Enclosure_Assembly.SLDASM
+├── Dispolays_Enclosure_Master_front-shell.SLDPRT
+└── Dispolays_kicad.step
+
+hardware/
+├── Dispolays_week4.kicad_pro
+├── Dispolays_week4.kicad_pcb
+├── Dispolays_week4_schematics.kicad_sch
+├── Dispolays_week4-PTH.drl
+└── Dispolays_week4-NPTH.drl
+
+images/
+├── Dispolays_schematics.png
+├── Enclosure_3D.png
+├── Pcb_Editor.png
+├── PCB-3d-front.png
+└── PCB-3d-back.png
 ```
 
-### Fabrication files
-
-Includes:
-
-```text
-F.Cu Gerber
-B.Cu Gerber
-F.Mask Gerber
-B.Mask Gerber
-F.Silkscreen Gerber
-B.Silkscreen Gerber, if used
-Edge.Cuts Gerber
-PTH drill file
-NPTH drill file
-```
-
-### CAD source
-
-Includes:
-
-```text
-Native SolidWorks part files
-Native SolidWorks assembly
-PCB STEP export
-Enclosure STEP export, still unfinished
-Front-shell STL, still finished
-Back-shell STL, finished
-Assembly render/ screenshot
-```
-
-
----
+The repository also includes the generated fabrication files. Native SolidWorks files should be collected with **Pack and Go** so the assembly does not lose referenced components when opened on another computer.
 
 ## Verification completed
 
-- Custom ESP32-C3 SuperMini schematic symbol created
-- Custom provisional SuperMini footprint created
-- MCP73831 changed to the five-pin SOT-23 package
-- Schematic ERC reviewed
-- PCB DRC reviewed
-- No unconnected nets reported after zone refill
-- GND pours added to both copper layers
-- Antenna keepout added
-- PCB imported into SolidWorks enclosure assembly
-- Three PCB mounting bosses aligned with PCB mounting holes
-- J2/separator interference identified and cleared
-- Side-button openings added
-- USB-C access opening added
-
----
+- [x] Custom ESP32-C3 SuperMini schematic symbol created
+- [x] Custom provisional SuperMini footprint created
+- [x] MCP73831 changed to the five-pin SOT-23 package
+- [x] Schematic ERC reviewed
+- [x] PCB DRC reviewed
+- [x] No unconnected nets reported after zone refill
+- [x] GND pours added to both copper layers
+- [x] Antenna keepout added
+- [x] PCB imported into the SolidWorks enclosure assembly
+- [x] Three PCB mounting bosses aligned with the PCB mounting holes
+- [x] J2 and separator interference identified and cleared
+- [x] Side-button openings added
+- [x] USB-C access opening added
 
 ## Verification still required
 
-Before PCB ordering:
+### Before PCB ordering
 
 - [ ] Purchase and measure the real ESP32-C3 SuperMini
 - [ ] Print the SuperMini footprint at 1:1 scale and test all 16 pins
-- [ ] Confirm the selected 1x8 female socket height and fit
+- [ ] Confirm the selected 1x8 female sockets fit and measure their height
 - [ ] Select switches that exactly match the frozen PCB footprints
-- [ ] Confirm the physical display harness fits J2
-- [ ] Verify J1 battery connector polarity
+- [ ] Confirm that the physical display harness fits J2
+- [ ] Verify the J1 battery-connector polarity
 - [ ] Select the exact protected single-cell LiPo
-- [ ] Select a 100 uF capacitor matching the PCB footprint
-- [ ] Verify all enclosure-to-PCB interference results
-- [ ] Complete the back shell and provisional battery pocket
-- [ ] Export final STEP and STL files
+- [ ] Select a 100 uF capacitor matching the current footprint
+- [ ] Complete the back shell and battery pocket
+- [ ] Run final enclosure-to-PCB interference checks
+- [ ] Export the final enclosure STEP and STL files
 - [ ] Inspect Gerbers and drill files in a Gerber viewer
 
-Before connecting a LiPo:
+### Before connecting a LiPo
 
-- [ ] Check continuity between 5V, 3V3, BAT+, and GND
+- [ ] Check for shorts between 5V, 3V3, BAT+, and GND
 - [ ] Assemble and test without the SuperMini or battery first
 - [ ] Apply current-limited 5 V at TP4
-- [ ] Confirm U2 does not overheat
-- [ ] Verify BAT+ is approximately 4.2 V with no battery
+- [ ] Confirm that U2 does not overheat
+- [ ] Verify that BAT+ is approximately 4.2 V with no battery connected
 - [ ] Confirm battery-plug polarity with a multimeter
-- [ ] Measure initial charge current, target approximately 196 mA
+- [ ] Measure the initial charge current, targeting approximately 196 mA
 - [ ] Verify the SS14 power-path voltage drop
 
-Firmware / breadboard tests still required:
+### Firmware and breadboard tests
 
-- [ ] T-00 SuperMini identity, sleep current, and wireless test
-- [ ] T-01 e-paper full-refresh test
-- [ ] T-02 partial refresh and ghosting test
-- [ ] T-03 button wake test
-- [ ] T-04 battery ADC test
-
----
+- [ ] T-00: SuperMini identity, sleep current, and wireless test
+- [ ] T-01: E-paper full-refresh test
+- [ ] T-02: Partial-refresh and ghosting test
+- [ ] T-03: Button wake test
+- [ ] T-04: Battery ADC test
 
 ## Known limitations
 
-1. No physical parts were available during Week 4.
+1. No physical components were available during Week 4.
 2. The SuperMini footprint is provisional and must be verified before fabrication.
-3. The enclosure uses conservative Version 1 dimensions and is not print-ready as a final product.
-4. The battery, switches, socket strips, display harness, and C4 package are not yet physically verified.
+3. The enclosure uses conservative Version 1 dimensions and is not yet ready for final printing.
+4. The battery, switches, socket strips, display harness, and C4 package have not been physically verified.
 5. The PCB uses three mounting holes instead of four.
-7. The PCB STEP model does not fully represent the removable SuperMini socket stack.
----
+6. The PCB STEP model does not yet represent the complete removable SuperMini socket stack.
 
-## Safety note
 
-This design was costume made please beware and dont try home unless yu ready to risk i all (praying hand meoji but i cant add it through my laptop forgor)
 
----
+## Safety
+
+This is a custom prototype that includes a single-cell LiPo charging circuit I could have messed something and boom! beware or something 🙏
 
 ## Author
 
-Sergel Hasabella  
-Week 4 hardware design submission  
-
+**Sergel Hasabella**  
+Week 4 hardware design submission
